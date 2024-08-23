@@ -1,7 +1,9 @@
 {
-  "name": "register-deployer",
+  "name": "karma-gap-deployer",
   "scripts": {
+    "compile": "npx hardhat compile",
     "test": "npx hardhat test",
+    "deploy": "npx hardhat test",
     "schemas": "npx hardhat run scripts/createSchemas.ts --network hardhat https://arb-mainnet.g.alchemy.com/v2/YOUR-API-KEY",
     "badges": "npx hardhat run scripts/registerBadges.ts --network hardhat https://arb-mainnet.g.alchemy.com/v2/YOUR-API-KEY",
     "grants": "npx hardhat run scripts/registerGrants.ts --network hardhat https://arb-mainnet.g.alchemy.com/v2/YOUR-API-KEY"

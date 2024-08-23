@@ -1,6 +1,7 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import dotenv from "dotenv";
+
 dotenv.config();
 
 const config: HardhatUserConfig = {
@@ -14,6 +15,15 @@ const config: HardhatUserConfig = {
       url: `${process.env.RPC_ARBITRUM_SEPOLIA}`,
       accounts: [`${process.env.PRIVATE_KEY}`],
     },
+    hardhat: {
+      forking: {
+        url: `${process.env.RPC_ARBITRUM}`,
+        enabled: true,
+      },
+    },
+  },
+  mocha: {
+    timeout: 100000,
   },
 };
 

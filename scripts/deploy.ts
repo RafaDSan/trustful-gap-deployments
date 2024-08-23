@@ -7,10 +7,17 @@ async function main() {
   const BadgeRegistry = await ethers.getContractFactory("BadgeRegistry", deployer);
   const GrantRegistry = await ethers.getContractFactory("GrantRegistry", deployer);
   const TrustfulScorer = await ethers.getContractFactory("TrustfulScorer", deployer);
-  const ResolverEAS = await ethers.getContractFactory("resolverTrustul/Resolver", deployer);
-  const ResolverTrustful = await ethers.getContractFactory("resolverEAS/Resolver", deployer);
+  const ResolverEAS = await ethers.getContractFactory(
+    "contracts/resolverEAS/Resolver.sol:Resolver",
+    deployer,
+  );
+  const ResolverTrustful = await ethers.getContractFactory(
+    "contracts/resolverTrustful/Resolver.sol:Resolver",
+    deployer,
+  );
 
   console.log("Deploying contracts...\n");
+
   const badgeRegistry = await BadgeRegistry.deploy();
   const grantRegistry = await GrantRegistry.deploy();
   const trustfulScorer = await TrustfulScorer.deploy();

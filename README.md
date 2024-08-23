@@ -28,13 +28,15 @@ Compile the contracts:
 $ yarn compile
 ```
 
-### Deployment
+### 1. Deployment
 
 Run the deployment script:
 
 ```sh
 $ yarn deploy --network arbitrum
 ```
+
+### 2. Create Schemas on EAS
 
 ## License
 

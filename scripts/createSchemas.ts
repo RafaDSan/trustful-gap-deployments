@@ -2,29 +2,21 @@ import { ethers } from "hardhat";
 import abi from "../abi/SchemaRegistry.json";
 
 async function main() {
-  if (!process.env.SCHEMA_REGISTRY_ADDRESS) {
-    throw new Error("SCHEMA_REGISTRY_ADDRESS must be set");
-  }
-
   const [deployer] = await ethers.getSigners();
-  console.log("Connected with: ", deployer.address);
+  console.log("Registering Schema with the account:", deployer.address);
 
   const SchemaRegistry = await ethers.getContractAt(
-    abi.abi as any,
-    process.env.SCHEMA_REGISTRY_ADDRESS,
-    deployer
+    abi as any,
+    process.env?.ARB_ONE_SCHEMA_REGISTRY as string,
+    deployer,
   );
 
   //Register the Badge Schema
-  let schema = "bytes32[] badges,uint8[] score,bytes32 grantId,uint256 scoreId";
-  let resolverAddress = process.env.RESOLVER_ADDRESS;
-  let revocable = true;
+  let schema = "bytes32 grantId,uint256 scoreId,bytes32[] badges,uint8[] score";
+  let resolverAddress = process.env?.RESOLVER_EAS as string;
+  let revocable = false;
 
-  const uid = await SchemaRegistry.callStatic.register(
-    schema,
-    resolverAddress,
-    revocable
-  );
+  const uid = await SchemaRegistry.callStatic.register(schema, resolverAddress, revocable);
   const tx = await SchemaRegistry.register(schema, resolverAddress, revocable);
   await tx.wait();
   console.log("Badge Schema registered with UID: ", uid);

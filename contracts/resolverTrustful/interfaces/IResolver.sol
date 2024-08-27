@@ -1,24 +1,32 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
+/// @notice The interface of the {Resolver} contract.
 interface IResolver {
-  /// Emitted when the `msg.sender` is not the EAS Resolver contract.
-  error OnlyEASResolver();
-
   /// Emitted when the badge is not registered in the scorer.
   error BadgeNotRegistered();
-
   /// Emitted when the program has no reviews.
   error GrantProgramNotReviewed();
+  /// Emitted when the badge and score arrays have different lengths.
+  error InvalidBadgeScoreLength();
+  /// Emitted when the `msg.sender` is not the EAS Resolver contract.
+  error OnlyEASResolver();
+  /// Emitted when the scorer is not initialized.
+  error ScorerNotInitialized();
+  /// Emitted when the resolver is not registered in the scorer.
+  error ResolverNotRegistered();
 
-  /// Emitted when the grant program does not exist.
-  error GrantProgramNonExistant();
-
+  /// Emitted when a new Scorer address is set.
+  event ScorerUpdated(address indexed oldScorer, address indexed newScorer);
+  /// Emitted when a new Scorer ID is set.
+  event ScorerIdUpdated(uint256 indexed oldScorerId, uint256 indexed newScorerId);
+  /// Emitted when a new EAS Resolver address is set.
+  event EASResolverUpdated(address indexed oldResolver, address indexed newResolver);
   /// Event emitted when a story review is created for the grant.
   event StoryCreated(
     bytes32 indexed grantUID,
     bytes32 indexed txUID,
-    string indexed grantProgramLabel,
+    uint256 indexed grantProgramUID,
     uint256 timestamp,
     uint256 averageScore,
     uint256 reviewCount
@@ -45,38 +53,40 @@ interface IResolver {
   /// Requirement:
   /// - The caller must be the EAS Resolver contract.
   /// - The badges must be registered in the Trustful Scorer.
-  /// - The grant program must exist.
   ///
   /// Emits a {StoryCreated} event.
   ///
   /// @param grantUID Unique identifier of the grant existing in the Grant Registry.
   /// @param txUID Unique identifier of the transaction on EAS that created the story.
-  /// @param scorerId Unique identifier of the scorer that registered the badges.
+  /// @param grantProgramUID The grant program UID.
   /// @param badges Array of badge IDs exiting in the Badge Registry.
   /// @param scores Array of scores for each badge.
-  /// @param grantProgramLabel Label of the grant program.
   function createStory(
-    uint256 scorerId,
     bytes32 grantUID,
     bytes32 txUID,
+    uint256 grantProgramUID,
     bytes32[] calldata badges,
-    uint8[] calldata scores,
-    string memory grantProgramLabel
-  ) external;
+    uint8[] calldata scores
+  ) external returns (bool success);
 
   /// @notice Sets a new address for the Trustful Scorer.
+  /// NOTE: Will set the scorerId to zero. You must set it again.
   /// @param _scorer Address of the Trustful Scorer contract.
   function setScorer(address _scorer) external;
 
+  /// @notice Sets a new scorer ID.
+  /// @param _scorerId Unique identifier of the scorer.
+  function setScorerId(uint256 _scorerId) external;
+
   /// @notice Sets a new address for the EAS Resolver.
   /// @param _easResolver Address of the EAS Resolver contract.
-  function setEasResolver(address _easResolver) external;
+  function setEASResolver(address _easResolver) external;
 
-  /// @param grantProgramLabel Label of the grant program.
+  /// @param grantProgramUID Encoded grant program UID.
   /// @return success If the operation succeeded.
   /// @return score The average score of the grant program.
   function scoreOf(
-    bytes memory grantProgramLabel
+    bytes memory grantProgramUID
   ) external view returns (bool success, uint256 score);
 
   /// @param grantUID Unique identifier of the grant.
@@ -95,17 +105,21 @@ interface IResolver {
   /// @return length The length of the timeline.
   function getGrantStorieLength(bytes32 grantUID) external view returns (uint256);
 
-  /// @param grantProgramLabel Label of the grant program.
+  /// @param grantProgramUID Label of the grant program.
   /// @return reviewCount The review count for the grant program.
-  function getGrantProgramReviewCount(
-    string memory grantProgramLabel
-  ) external view returns (uint256);
+  function getGrantProgramReviewCount(uint256 grantProgramUID) external view returns (uint256);
 
   /// @notice Gets the average score of a grant program.
+  ///
   /// Requirement:
   /// - The grant program must exist
   /// - The grant program must have at least one review.
-  /// @param grantProgramLabel Label of the grant program.
+  ///
+  /// NOTE: The result will be multiplied by the decimals in the Scorer.
+  /// Solidity can't handle floating points, so you can get the decimals by
+  /// calling {ITrustfulScorer.getScorerDecimals} and dividing the result.
+  ///
+  /// @param grantProgramUID Label of the grant program.
   /// @return averageScore The average score of the grant program.
-  function getGrantProgramScore(string memory grantProgramLabel) external view returns (uint256);
+  function getGrantProgramScore(uint256 grantProgramUID) external view returns (uint256);
 }

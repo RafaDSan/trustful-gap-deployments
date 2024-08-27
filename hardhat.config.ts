@@ -20,6 +20,9 @@ const config: HardhatUserConfig = {
   mocha: {
     timeout: 100000,
   },
+  etherscan: {
+    apiKey: `${process.env.ARB_SCAN}`,
+  },
 };
 
 export default config;

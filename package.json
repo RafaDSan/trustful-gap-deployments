@@ -5,9 +5,12 @@
     "clean": "npx hardhat clean",
     "test": "npx hardhat test",
     "deploy": "npx hardhat run scripts/deploy.ts",
-    "schemas": "npx hardhat run scripts/createSchemas.ts",
+    "schemas": "npx hardhat run scripts/createSchema.ts",
+    "grants": "npx hardhat run scripts/registerGrants.ts",
     "badges": "npx hardhat run scripts/registerBadges.ts",
-    "grants": "npx hardhat run scripts/registerGrants.ts"
+    "scorer": "npx hardhat run scripts/registerScorer.ts",
+    "initialize": "npx hardhat run scripts/initialize.ts",
+    "review": "npx hardhat run scripts/review.ts"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.0",

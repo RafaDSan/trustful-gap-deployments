@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
+/// @notice The interface of the {TrustfulScorer} contract.
 interface ITrustfulScorer {
   /// Emitted when the account has no badges.
   error AccountHasNoBadges();
@@ -107,6 +108,10 @@ interface ITrustfulScorer {
   /// @param scorerId Unique identifier of the scorer.
   /// @param metadata The metadata of the scorer.
   function setTokenURI(uint256 scorerId, string memory metadata) external;
+
+  /// @notice Returns true if the scorer exists.
+  /// @param scorerId Unique identifier of the scorer.
+  function scorerExists(uint256 scorerId) external view returns (bool);
 
   /// @notice Request a score to the resolver by providing arbitrary data.
   ///

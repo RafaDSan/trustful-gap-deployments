@@ -156,7 +156,8 @@ contract TrustfulScorer is ITrustfulScorer {
     emit TokenURIUpdated(scorerId, metadata);
   }
 
-  function _scorerExists(uint256 scorerId) internal view returns (bool) {
+  /// @inheritdoc ITrustfulScorer
+  function scorerExists(uint256 scorerId) public view returns (bool) {
     Scorer storage scorer = _scorers[scorerId];
     if (scorer.badgeIds.length() == 0) return false;
     return true;
@@ -164,7 +165,7 @@ contract TrustfulScorer is ITrustfulScorer {
 
   /// @inheritdoc ITrustfulScorer
   function getScoreOf(bytes memory data, uint256 scorerId) external view returns (uint256) {
-    if (!_scorerExists(scorerId)) revert ScorerNotRegistered();
+    if (!scorerExists(scorerId)) revert ScorerNotRegistered();
 
     // try to call the resolver contract
     IResolver resolver = IResolver(_resolvers[scorerId]);
@@ -232,7 +233,7 @@ contract TrustfulScorer is ITrustfulScorer {
 
   /// @inheritdoc ITrustfulScorer
   function getBadgesIds(uint256 scorerId) public view returns (bytes32[] memory) {
-    if (!_scorerExists(scorerId)) revert ScorerNotRegistered();
+    if (!scorerExists(scorerId)) revert ScorerNotRegistered();
     return _scorers[scorerId].badgeIds.values();
   }
 
@@ -253,7 +254,7 @@ contract TrustfulScorer is ITrustfulScorer {
 
   /// @inheritdoc ITrustfulScorer
   function getBadgeScore(uint256 scorerId, bytes32 badgeId) external view returns (uint256) {
-    if (!_scorerExists(scorerId)) revert ScorerNotRegistered();
+    if (!scorerExists(scorerId)) revert ScorerNotRegistered();
     return _scorers[scorerId].badgeScores[badgeId];
   }
 

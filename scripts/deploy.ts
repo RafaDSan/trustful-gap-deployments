@@ -4,8 +4,8 @@ async function main() {
   const [deployer] = await ethers.getSigners();
   console.log("Deploying contracts with the account:", deployer.address);
 
-  const BadgeRegistry = await ethers.getContractFactory("BadgeRegistry", deployer);
   const GrantRegistry = await ethers.getContractFactory("GrantRegistry", deployer);
+  const BadgeRegistry = await ethers.getContractFactory("BadgeRegistry", deployer);
   const TrustfulScorer = await ethers.getContractFactory("TrustfulScorer", deployer);
   const ResolverEAS = await ethers.getContractFactory(
     "contracts/resolverEAS/Resolver.sol:Resolver",
@@ -21,7 +21,11 @@ async function main() {
   const badgeRegistry = await BadgeRegistry.deploy();
   const grantRegistry = await GrantRegistry.deploy();
   const trustfulScorer = await TrustfulScorer.deploy();
-  const resolverEAS = await ResolverEAS.deploy(process.env?.ARB_ONE_EAS);
+  const resolverEAS = await ResolverEAS.deploy(
+    process.env?.ARB_ONE_EAS,
+    grantRegistry.address,
+    badgeRegistry.address,
+  );
   const resolverTrustful = await ResolverTrustful.deploy(
     trustfulScorer.address,
     resolverEAS.address,

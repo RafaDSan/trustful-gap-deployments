@@ -12,14 +12,14 @@ async function main() {
   );
 
   //Register the Badge Schema
-  let schema = "bytes32 grantId,uint256 scoreId,bytes32[] badges,uint8[] score";
-  let resolverAddress = process.env?.RESOLVER_EAS as string;
+  let schema = "bytes32 grantUID,bytes32[] badges,uint8[] score";
+  let resolverAddress = process.env.RESOLVER_EAS as string;
   let revocable = false;
 
-  const uid = await SchemaRegistry.callStatic.register(schema, resolverAddress, revocable);
-  const tx = await SchemaRegistry.register(schema, resolverAddress, revocable);
-  await tx.wait();
-  console.log("Badge Schema registered with UID: ", uid);
+  const schemaUID = await SchemaRegistry.callStatic.register(schema, resolverAddress, revocable);
+  const tx0 = await SchemaRegistry.register(schema, resolverAddress, revocable);
+  await tx0.wait();
+  console.log("Badge Schema registered with UID:", schemaUID, "at tx:", tx0.hash);
 }
 
 main()

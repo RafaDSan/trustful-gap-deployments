@@ -10,16 +10,22 @@ import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 /// @notice This is the implementation of the Trustful Resolver contract.
 /// This contract is used to resolve scores and badges from Trustful.
 contract Resolver is IResolver, Ownable {
-  /// Scorer contract address
+  /// Trustful Scorer contract address
   address public scorer;
   /// EAS Resolver contract address
   address public easResolver;
 
+  /// The scorer ID registered in the Trustful Scorer contract.
+  /// It must be initialized before start creating stories.
+  /// @dev Create a scorer in TrustfulScorer and set the ID here.
+  /// NOTICE: To pause this contract, set this to zero.
+  uint256 public scorerId;
+
   /// Maps grant IDs to their stories
   /// @dev We don't expect this to grow too large
   mapping(bytes32 => GrantStory[]) private _stories;
-  /// Maps grant program labels to their reviews
-  mapping(string => GrantProgram) private _grantPrograms;
+  /// Maps grant program IDs to their reviews
+  mapping(uint256 => GrantProgram) private _grantPrograms;
 
   /// @param _scorer Address of the Trustful Scorer contract.
   /// @param _easResolver Address of the EAS Resolver contract.
@@ -30,16 +36,21 @@ contract Resolver is IResolver, Ownable {
 
   /// @inheritdoc IResolver
   function createStory(
-    uint256 scorerId,
     bytes32 grantUID,
     bytes32 txUID,
+    uint256 grantProgramUID,
     bytes32[] calldata badges,
-    uint8[] calldata scores,
-    string memory grantProgramLabel
-  ) external {
+    uint8[] calldata scores
+  ) external returns (bool) {
     if (msg.sender != easResolver) revert OnlyEASResolver();
+    if (badges.length != scores.length) revert InvalidBadgeScoreLength();
+    if (scorerId == 0) revert ScorerNotInitialized();
+    // must check if the resolver is registered all the times because its
+    // possible that the Scorer was updated to a different resolver
+    if (ITrustfulScorer(scorer).getResolverAddress(scorerId) != address(this))
+      revert ResolverNotRegistered();
 
-    GrantProgram memory grantProgram = _grantPrograms[grantProgramLabel];
+    GrantProgram memory grantProgram = _grantPrograms[grantProgramUID];
     uint256 averageScore = 0;
 
     unchecked {
@@ -74,7 +85,7 @@ contract Resolver is IResolver, Ownable {
         // if the grant program has already been reviewed by this grant
         // we need to revert the last average score and calculate the new one
         uint256 lastReviewScore = _stories[grantUID][lastStoryIndex - 1].averageScore;
-        uint256 lastAverageScore = getGrantProgramScore(grantProgramLabel);
+        uint256 lastAverageScore = getGrantProgramScore(grantProgramUID);
         // A1 = (X * ( C + 1 ) - A2) / C
         uint256 lastLastAverageScore = ((lastAverageScore * grantProgram.validReviewCount) -
           lastReviewScore) / (grantProgram.validReviewCount - 1);
@@ -91,32 +102,46 @@ contract Resolver is IResolver, Ownable {
     _stories[grantUID].push(story);
 
     // update the grant program review count and average score
-    _grantPrograms[grantProgramLabel] = grantProgram;
+    _grantPrograms[grantProgramUID] = grantProgram;
 
     emit StoryCreated(
       grantUID,
       txUID,
-      grantProgramLabel,
+      grantProgramUID,
       block.timestamp,
       averageScore,
       grantProgram.validReviewCount
     );
+
+    return true;
   }
 
   /// @inheritdoc IResolver
   function setScorer(address _scorer) external onlyOwner {
+    address oldScorer = scorer;
     scorer = _scorer;
+    scorerId = 0;
+    emit ScorerUpdated(oldScorer, _scorer);
   }
 
   /// @inheritdoc IResolver
-  function setEasResolver(address _easResolver) external onlyOwner {
+  function setScorerId(uint256 _scorerId) external onlyOwner {
+    uint256 oldScorerId = scorerId;
+    scorerId = _scorerId;
+    emit ScorerIdUpdated(oldScorerId, _scorerId);
+  }
+
+  /// @inheritdoc IResolver
+  function setEASResolver(address _easResolver) external onlyOwner {
+    address oldResolver = easResolver;
     easResolver = _easResolver;
+    emit EASResolverUpdated(oldResolver, _easResolver);
   }
 
   /// @inheritdoc IResolver
   function scoreOf(bytes memory data) external view returns (bool success, uint256 score) {
-    string memory grantProgramLabel = abi.decode(data, (string));
-    return (true, getGrantProgramScore(grantProgramLabel));
+    uint256 grantProgramUID = abi.decode(data, (uint256));
+    return (true, getGrantProgramScore(grantProgramUID));
   }
 
   /// @inheritdoc IResolver
@@ -138,17 +163,14 @@ contract Resolver is IResolver, Ownable {
   }
 
   /// @inheritdoc IResolver
-  function getGrantProgramReviewCount(
-    string memory grantProgramLabel
-  ) external view returns (uint256) {
-    return _grantPrograms[grantProgramLabel].validReviewCount;
+  function getGrantProgramReviewCount(uint256 grantProgramUID) external view returns (uint256) {
+    return _grantPrograms[grantProgramUID].validReviewCount;
   }
 
   /// @inheritdoc IResolver
-  function getGrantProgramScore(string memory grantProgramLabel) public view returns (uint256) {
-    GrantProgram memory grantProgram = _grantPrograms[grantProgramLabel];
-    if (grantProgram.validReviewCount == 0) revert GrantProgramNonExistant();
-    if (grantProgram.averageScore == 0) revert GrantProgramNotReviewed();
+  function getGrantProgramScore(uint256 grantProgramUID) public view returns (uint256) {
+    GrantProgram memory grantProgram = _grantPrograms[grantProgramUID];
+    if (grantProgram.validReviewCount == 0) revert GrantProgramNotReviewed();
     return grantProgram.averageScore;
   }
 }

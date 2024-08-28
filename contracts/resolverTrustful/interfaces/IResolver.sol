@@ -105,9 +105,13 @@ interface IResolver {
   /// @return length The length of the timeline.
   function getGrantStorieLength(bytes32 grantUID) external view returns (uint256);
 
-  /// @param grantProgramUID Label of the grant program.
+  /// @param grantProgramUID The ID of the progam.
+  /// @return validReviewCount The review count for the grant program.
+  function getGrantProgramValidReviewCount(uint256 grantProgramUID) external view returns (uint256);
+
+  /// @param grantProgramUID The ID of the progam.
   /// @return reviewCount The review count for the grant program.
-  function getGrantProgramReviewCount(uint256 grantProgramUID) external view returns (uint256);
+  function getGrantProgramTotalReviewCount(uint256 grantProgramUID) external view returns (uint256);
 
   /// @notice Gets the average score of a grant program.
   ///
@@ -119,7 +123,7 @@ interface IResolver {
   /// Solidity can't handle floating points, so you can get the decimals by
   /// calling {ITrustfulScorer.getScorerDecimals} and dividing the result.
   ///
-  /// @param grantProgramUID Label of the grant program.
+  /// @param grantProgramUID The ID of the progam.
   /// @return averageScore The average score of the grant program.
   function getGrantProgramScore(uint256 grantProgramUID) external view returns (uint256);
 }

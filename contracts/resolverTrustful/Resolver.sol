@@ -73,14 +73,17 @@ contract Resolver is IResolver, Ownable {
       // if the grant program has no reviews yet
       if (grantProgram.validReviewCount == 0) {
         grantProgram.averageScore = averageScore;
-        grantProgram.validReviewCount++;
+        ++grantProgram.validReviewCount;
       } else if (lastStoryIndex == 0) {
         // if the grant program is already reviewed by another grant
         // but this is the first story of this grant
         // X = (A1 * C + A2) / C + 1
         grantProgram.averageScore =
           (grantProgram.averageScore * grantProgram.validReviewCount + averageScore) /
-          (grantProgram.validReviewCount++);
+          (++grantProgram.validReviewCount);
+      } else if (grantProgram.validReviewCount == 1) {
+        // if the grant program has only one review we need to overwrite it
+        grantProgram.averageScore = averageScore;
       } else {
         // if the grant program has already been reviewed by this grant
         // we need to revert the last average score and calculate the new one
@@ -163,8 +166,17 @@ contract Resolver is IResolver, Ownable {
   }
 
   /// @inheritdoc IResolver
-  function getGrantProgramReviewCount(uint256 grantProgramUID) external view returns (uint256) {
+  function getGrantProgramValidReviewCount(
+    uint256 grantProgramUID
+  ) external view returns (uint256) {
     return _grantPrograms[grantProgramUID].validReviewCount;
+  }
+
+  /// @inheritdoc IResolver
+  function getGrantProgramTotalReviewCount(
+    uint256 grantProgramUID
+  ) external view returns (uint256) {
+    return _grantPrograms[grantProgramUID].reviewCount;
   }
 
   /// @inheritdoc IResolver

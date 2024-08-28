@@ -18,24 +18,24 @@ async function main() {
 
   console.log("Deploying contracts...\n");
 
-  // const badgeRegistry = await BadgeRegistry.deploy();
-  // const grantRegistry = await GrantRegistry.deploy();
+  const badgeRegistry = await BadgeRegistry.deploy();
+  const grantRegistry = await GrantRegistry.deploy();
   const trustfulScorer = await TrustfulScorer.deploy();
-  // const resolverEAS = await ResolverEAS.deploy(
-  //   process.env?.ARB_ONE_EAS,
-  //   grantRegistry.address,
-  //   badgeRegistry.address,
-  // );
-  // const resolverTrustful = await ResolverTrustful.deploy(
-  //   trustfulScorer.address,
-  //   resolverEAS.address,
-  // );
+  const resolverEAS = await ResolverEAS.deploy(
+    process.env.ARB_ONE_EAS as string,
+    grantRegistry.address,
+    badgeRegistry.address,
+  );
+  const resolverTrustful = await ResolverTrustful.deploy(
+    trustfulScorer.address,
+    resolverEAS.address,
+  );
 
-  // console.log("BadgeRegistry deployed to:", badgeRegistry.address);
-  // console.log("GrantRegistry deployed to:", grantRegistry.address);
+  console.log("BadgeRegistry deployed to:", badgeRegistry.address);
+  console.log("GrantRegistry deployed to:", grantRegistry.address);
   console.log("TrustfulScorer deployed to:", trustfulScorer.address);
-  // console.log("ResolverEAS deployed to:", resolverEAS.address);
-  // console.log("ResolverTrustful deployed to:", resolverTrustful.address);
+  console.log("ResolverEAS deployed to:", resolverEAS.address);
+  console.log("ResolverTrustful deployed to:", resolverTrustful.address);
 }
 
 main()

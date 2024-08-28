@@ -9,12 +9,14 @@ interface ITrustfulScorer {
   error BadgeNotRegistered();
   /// Emitted when the badge is already registered.
   error BadgeRegistered();
-  /// Emitted when the call to the resolver is fails.
-  error InvalidResolverCall();
+  /// Emitted for invalid badge ID.
+  error InvalidBadgeId();
   /// Emitted when the length does not match criteria.
   error InvalidLength();
   /// Emitted when the manager is invalid.
   error InvalidManager();
+  /// Emitted when the call to the resolver is fails.
+  error InvalidResolverCall();
   /// Emitted when the scorer is not registered.
   error ScorerNotRegistered();
 

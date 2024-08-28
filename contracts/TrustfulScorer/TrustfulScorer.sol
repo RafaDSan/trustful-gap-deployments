@@ -50,12 +50,11 @@ contract TrustfulScorer is ITrustfulScorer {
     uint256[] calldata badgeScores,
     uint8 scoresDecimals,
     string memory metadata
-  ) external returns (uint256) {
-    uint256 scorerId = nextScorerId;
-
+  ) external returns (uint256 scorerId) {
     // assembly incrementation of scorer IDs
     assembly {
-      sstore(nextScorerId.slot, add(sload(nextScorerId.slot), 1))
+      scorerId := add(sload(nextScorerId.slot), 1)
+      sstore(nextScorerId.slot, scorerId)
     }
 
     // check if the length of badgeIds and badgeScores are the same
@@ -83,7 +82,7 @@ contract TrustfulScorer is ITrustfulScorer {
     }
 
     emit ScorerRegistered(scorerId, manager, resolver);
-    return nextScorerId;
+    return scorerId;
   }
 
   /// @inheritdoc ITrustfulScorer
@@ -94,6 +93,7 @@ contract TrustfulScorer is ITrustfulScorer {
   ) external onlyManager(scorerId) {
     Scorer storage scorer = _scorers[scorerId];
     if (scorer.badgeIds.contains(badgeId)) revert BadgeRegistered();
+    if (badgeId == bytes32(0)) revert InvalidBadgeId();
 
     scorer.badgeIds.add(badgeId);
     scorer.badgeScores[badgeId] = badgeScore * 10 ** scorer.scoresDecimals;
@@ -145,8 +145,8 @@ contract TrustfulScorer is ITrustfulScorer {
 
   /// @inheritdoc ITrustfulScorer
   function setNewResolver(uint256 scorerId, address newResolver) external onlyManager(scorerId) {
-    address oldResolver = _managers[scorerId];
-    _managers[scorerId] = newResolver;
+    address oldResolver = _resolvers[scorerId];
+    _resolvers[scorerId] = newResolver;
     emit ResolverUpdated(scorerId, oldResolver, newResolver);
   }
 
@@ -284,11 +284,13 @@ contract TrustfulScorer is ITrustfulScorer {
 
   /// @inheritdoc ITrustfulScorer
   function tokenURI(uint256 scorerId) external view returns (string memory) {
+    if (!scorerExists(scorerId)) revert ScorerNotRegistered();
     return _scorers[scorerId].metadata;
   }
 
   /// @inheritdoc ITrustfulScorer
   function getScorerDecimals(uint256 scorerId) public view returns (uint8) {
+    if (!scorerExists(scorerId)) revert ScorerNotRegistered();
     return _scorers[scorerId].scoresDecimals;
   }
 }

@@ -46,15 +46,7 @@ Add the contract addresses to the `.env` file then verify them on Arbiscan.
 $ npx hardhat verify --network arbitrum <CONTRACT_ADDRESS> <CONSTRUCTOR_ARGS>
 ```
 
-### 2. Create Schemas on EAS
-
-Create the schemas on the EAS contract:
-
-```sh
-$ yarn schemas --network arbitrum
-```
-
-### 3. Register the grants
+### 2. Register the grants
 
 Register the grants on the in the `GrantRegistry.sol`
 
@@ -62,7 +54,7 @@ Register the grants on the in the `GrantRegistry.sol`
 $ yarn grants --network arbitrum
 ```
 
-### 4. Register the badges
+### 3. Register the badges
 
 Register the badges on the in the `BadgeRegistry.sol`
 
@@ -70,7 +62,7 @@ Register the badges on the in the `BadgeRegistry.sol`
 $ yarn badges --network arbitrum
 ```
 
-### 5. Create a Scorer
+### 4. Create a Scorer
 
 The scorer is a collective of badges that carry a score for each badge. We also have a `resolver`
 field to handle arbitrary data. Which is the case for Karma Gap Reviews, as we don't know which
@@ -78,6 +70,14 @@ exact score the reviewer will give.
 
 ```sh
 $ yarn scorer --network arbitrum
+```
+
+### 2. Create Schemas on EAS
+
+Create the schemas on the EAS contract:
+
+```sh
+$ yarn schemas --network arbitrum
 ```
 
 ### 6. Initialize the contracts

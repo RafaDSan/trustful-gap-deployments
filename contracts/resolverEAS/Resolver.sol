@@ -27,7 +27,7 @@ contract Resolver is IResolver, Ownable {
   /// @param _grantRegistry The address of the global grant registry.
   /// @param _badgeRegistry The address of the global badge registry.
   constructor(address _eas, address _grantRegistry, address _badgeRegistry) Ownable(msg.sender) {
-    if (eas == address(0)) revert InvalidContractAddress();
+    if (_eas == address(0)) revert InvalidContractAddress();
     eas = _eas;
     grantRegistry = IGrantRegistry(_grantRegistry);
     badgeRegistry = IBadgeRegistry(_badgeRegistry);

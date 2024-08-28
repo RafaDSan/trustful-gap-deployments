@@ -1,5 +1,5 @@
 import { ethers } from "hardhat";
-import abi from "../artifacts/contracts/registry/GrantRegistry.sol/GrantRegistry.json";
+import abi from "../artifacts/contracts/Registry/GrantRegistry.sol/GrantRegistry.json";
 
 // See {IGrantRegistry-Grant}.
 const grants = [

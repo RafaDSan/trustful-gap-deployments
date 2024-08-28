@@ -1,5 +1,5 @@
 import { ethers } from "hardhat";
-import abi from "../artifacts/contracts/registry/BadgeRegistry.sol/BadgeRegistry.json";
+import abi from "../artifacts/contracts/Registry/BadgeRegistry.sol/BadgeRegistry.json";
 
 const badges = [
   {

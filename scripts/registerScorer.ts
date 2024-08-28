@@ -1,5 +1,5 @@
 import { ethers } from "hardhat";
-import abi from "../artifacts/contracts/trustfulScorer/TrustfulScorer.sol/TrustfulScorer.json";
+import abi from "../artifacts/contracts/TrustfulScorer/TrustfulScorer.sol/TrustfulScorer.json";
 
 const badgeIds = [
   "0xe02b7f93d209aa1a9708544eb17e46eee3a1f45fed0de720f4866e0caff148f8",

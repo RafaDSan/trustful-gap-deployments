@@ -58,25 +58,19 @@ async function main() {
   console.log("Registering badges with the account:", deployer.address);
 
   const BadgeRegistry = await ethers.getContractAt(
-    abi as any,
+    abi.abi as any,
     process.env?.BADGE_REGISTRY as string,
     deployer,
   );
 
   for (let i = 0; i < badges.length; i++) {
     try {
+      const badgeId = await BadgeRegistry.callStatic.create(badges[i]);
       const tx0 = await BadgeRegistry.create(badges[i]);
       const receipt = await tx0.wait();
-
-      const badgeRegisteredEvent = receipt.events?.find(
-        (event: any) => event.event === "BadgeRegistered",
+      console.log(
+        `Badge ${badges[i].name} created at ID: ${badgeId} successfully. Transaction hash: ${receipt.transactionHash}`,
       );
-      if (badgeRegisteredEvent) {
-        const badgeId = badgeRegisteredEvent.args?.badgeId;
-        console.log(
-          `Badge ${badges[i].name} created at ID: ${badgeId} successfully. Transaction hash: ${receipt.transactionHash}`,
-        );
-      }
     } catch (error) {
       console.error(`Error creating badge ${badges[i].name}:`, error);
     }

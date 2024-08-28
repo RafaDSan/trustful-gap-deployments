@@ -71,28 +71,31 @@ contract Resolver is IResolver, Ownable {
       // calculate the average score of the grant program
       uint256 lastStoryIndex = getGrantStorieLength(grantUID);
       // if the grant program has no reviews yet
-      if (grantProgram.validReviewCount == 0) {
+      if (grantProgram.validReviewCount == 0 || lastStoryIndex == 0) {
         grantProgram.averageScore = averageScore;
         grantProgram.validReviewCount++;
-      } else if (lastStoryIndex == 0) {
-        // if the grant program is already reviewed by another grant
-        // but this is the first story of this grant
-        // X = (A1 * C + A2) / C + 1
-        grantProgram.averageScore =
-          (grantProgram.averageScore * grantProgram.validReviewCount + averageScore) /
-          (grantProgram.validReviewCount++);
       } else {
         // if the grant program has already been reviewed by this grant
         // we need to revert the last average score and calculate the new one
         uint256 lastReviewScore = _stories[grantUID][lastStoryIndex - 1].averageScore;
         uint256 lastAverageScore = getGrantProgramScore(grantProgramUID);
-        // A1 = (X * ( C + 1 ) - A2) / C
-        uint256 lastLastAverageScore = ((lastAverageScore * grantProgram.validReviewCount) -
-          lastReviewScore) / (grantProgram.validReviewCount - 1);
-        // Recalculate the average score with the most recent review
-        grantProgram.averageScore =
-          (lastLastAverageScore * (grantProgram.validReviewCount - 1) + averageScore) /
-          (grantProgram.validReviewCount);
+
+        if (lastReviewScore != lastAverageScore) {
+          // Recalculate the average score, excluding the last review
+          uint256 lastLastAverageScore = ((lastAverageScore * grantProgram.validReviewCount) -
+            lastReviewScore) / (grantProgram.validReviewCount - 1);
+
+          // Calculate new average including the new review
+          grantProgram.averageScore =
+            (lastLastAverageScore * (grantProgram.validReviewCount - 1) + averageScore) /
+            grantProgram.validReviewCount;
+        } else {
+          // If the last review score is the same as the average, simply update with the new score
+          grantProgram.averageScore =
+            (lastAverageScore * grantProgram.validReviewCount + averageScore) /
+            (grantProgram.validReviewCount + 1);
+          grantProgram.validReviewCount++;
+        }
       }
       grantProgram.reviewCount++;
     }

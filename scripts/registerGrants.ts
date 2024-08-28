@@ -4,14 +4,18 @@ import abi from "../artifacts/contracts/registry/GrantRegistry.sol/GrantRegistry
 // See {IGrantRegistry-Grant}.
 const grants = [
   {
-    grantId: "0x7681b353ede51eadfbf7165c592a8449808ef4f37999cd9c819cb29dc923ad1a",
+    grantId: "0x635c2d0642c81e3191e6eff8623ba601b7e22e832d7791712b6bc28d052ff2b5",
     programId: 260,
+    grantee: "0x343e6C4512c9f43C4b80994897627BCd29D2a956",
+    chain: 42161,
     status: 1,
   },
   {
-    grantId: "0x35e2d5b3bb6fe9ecbcd3e4656520a4de6f0e7ea525ddd19f27af0ed66a83a6f1",
+    grantId: "0xcdaa67fc005df1417c7f9a54eee0d62ec3b44d157eba707b3a0169d4cbca9bf3",
     programId: 260,
-    status: 1,
+    grantee: "0x41D2a18E1DdACdAbFDdADB62e9AEE67c63070b76",
+    chain: 42161,
+    status: 2,
   },
 ];
 
@@ -20,7 +24,7 @@ async function main() {
   console.log("Registering Grants with:", deployer.address);
 
   const GrantRegistry = await ethers.getContractAt(
-    abi as any,
+    abi.abi as any,
     process.env.GRANT_REGISTRY as string,
     deployer,
   );
@@ -30,14 +34,18 @@ async function main() {
       const tx = await GrantRegistry.register(
         grants[i].grantId,
         grants[i].programId,
+        grants[i].grantee,
+        grants[i].chain,
         grants[i].status,
       );
       await tx.wait();
-      console.log(`Grant ID ${grants[i].programId} registered successfully at tx:`, tx.hash);
+      console.log(`Grant ID ${grants[i].grantId} registered successfully at tx:`, tx.hash);
     } catch (error) {
       console.error(`Error creating Grant with ID: ${grants[i].programId}`, error);
     }
   }
+
+  // const address = await GrantRegistry.getGrantee(grants[0].grantId);
 }
 
 main()

@@ -9,8 +9,6 @@ interface IGrantRegistry {
   error GrantNonExistent();
   /// Emitted when the grant owner is non-existent.
   error InvalidGrantOwner();
-  /// Emitted when the array length is invalid.
-  error InvalidArrayLength();
 
   /// Emitted when the grant is sucessfuly registered.
   event GrantRegistered(
@@ -26,8 +24,10 @@ interface IGrantRegistry {
 
   /// Grant Struct.
   struct Grant {
-    address grantee; // Address of the person in charge of delivering the grant
+    bytes32 grantUID; // The grant UID defined in EAS
     uint256 grantProgramUID; // The grant program UID defined by Karma Gap
+    address grantee; // Address of the person in charge of delivering the grant
+    uint256 chainId; // The chain ID where the grant was originated
     Status status; // Current status of the grant
   }
 
@@ -42,17 +42,21 @@ interface IGrantRegistry {
 
   /// @notice Batch register grants in the registry.
   /// See {IGrantRegistry.register}.
-  function batchRegister(
-    bytes32[] calldata grantUIDs,
-    uint256[] calldata grantProgramUIDs,
-    uint256[] calldata statuses
-  ) external;
+  function batchRegister(Grant[] calldata grants) external;
 
   /// @notice Register a new grant in the registry.
   /// @param grantUID The grant struct to be registered.
   /// @param grantProgramUID The UID of the grant program.
+  /// @param grantee The address of the grantee.
+  /// @param chainId The origin chain ID of the grant.
   /// @param status The status of the grant.
-  function register(bytes32 grantUID, uint256 grantProgramUID, uint256 status) external;
+  function register(
+    bytes32 grantUID,
+    uint256 grantProgramUID,
+    address grantee,
+    uint256 chainId,
+    Status status
+  ) external;
 
   /// @notice Update the grant data.
   /// @param grantUID The grant ID to be updated.

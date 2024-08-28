@@ -11,11 +11,11 @@ async function main() {
   // Must get the SCORER_ID created in the Trustful Scorer contract
   // and set in the Trustful Resolver contract.
   const TrustfulResolver = await ethers.getContractAt(
-    abitrustful as any,
+    abitrustful.abi as any,
     process.env?.RESOLVER_TRUSTFUL as string,
     deployer,
   );
-  const tx0 = await TrustfulResolver.setScorerId(process.env?.SCORER_ID);
+  const tx0 = await TrustfulResolver.setScorerId(process.env.SCORER_ID as string);
   await tx0.wait();
   console.log("Scorer ID set in Trustful Resolver at tx:", tx0.hash);
 
@@ -26,11 +26,11 @@ async function main() {
   // The EAS calls the Trustful Resolver, but the Trustful Resolver can
   // only accept calls from the EAS, therefore the need for this link.
   const EASResolver = await ethers.getContractAt(
-    abieas as any,
-    process.env?.RESOLVER_EAS as string,
+    abieas.abi as any,
+    process.env.RESOLVER_EAS as string,
     deployer,
   );
-  const tx1 = await EASResolver.setTrustfulResolver(process.env?.RESOLVER_TRUSTFUL);
+  const tx1 = await EASResolver.setTrustfulResolver(process.env.RESOLVER_TRUSTFUL as string);
   await tx1.wait();
   console.log("Trustful Resolver set in EAS Resolver at tx:", tx0.hash);
 }

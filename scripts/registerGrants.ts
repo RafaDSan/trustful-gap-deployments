@@ -6,16 +6,16 @@ const grants = [
   {
     grantId: "0x635c2d0642c81e3191e6eff8623ba601b7e22e832d7791712b6bc28d052ff2b5",
     programId: 260,
-    grantee: "0x343e6C4512c9f43C4b80994897627BCd29D2a956",
+    grantee: "0x67eE5d3A5374849aDB4D80713a5765F164375F03",
     chain: 42161,
-    status: 1,
+    status: 0,
   },
   {
-    grantId: "0xcdaa67fc005df1417c7f9a54eee0d62ec3b44d157eba707b3a0169d4cbca9bf3",
+    grantId: "0x8f11bdca983f72b840c4bbc4c2b96ebf4292872669619eac8bb24d88dedcef99",
     programId: 260,
-    grantee: "0x41D2a18E1DdACdAbFDdADB62e9AEE67c63070b76",
+    grantee: "0x67eE5d3A5374849aDB4D80713a5765F164375F03",
     chain: 42161,
-    status: 2,
+    status: 1,
   },
 ];
 
@@ -44,8 +44,6 @@ async function main() {
       console.error(`Error creating Grant with ID: ${grants[i].programId}`, error);
     }
   }
-
-  // const address = await GrantRegistry.getGrantee(grants[0].grantId);
 }
 
 main()

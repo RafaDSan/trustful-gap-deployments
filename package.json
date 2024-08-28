@@ -5,7 +5,7 @@
     "clean": "npx hardhat clean",
     "test": "npx hardhat test",
     "deploy": "npx hardhat run scripts/deploy.ts",
-    "schemas": "npx hardhat run scripts/registerSchema.ts",
+    "schema": "npx hardhat run scripts/registerSchema.ts",
     "grants": "npx hardhat run scripts/registerGrants.ts",
     "badges": "npx hardhat run scripts/registerBadges.ts",
     "scorer": "npx hardhat run scripts/registerScorer.ts",

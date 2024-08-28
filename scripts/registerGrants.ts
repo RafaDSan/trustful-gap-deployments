@@ -17,6 +17,13 @@ const grants = [
     chain: 42161,
     status: 1,
   },
+  {
+    grantId: "0xcdaa67fc005df1417c7f9a54eee0d62ec3b44d157eba707b3a0169d4cbca9bf3",
+    programId: 260,
+    grantee: "0x67eE5d3A5374849aDB4D80713a5765F164375F03",
+    chain: 42161,
+    status: 1,
+  },
 ];
 
 async function main() {

@@ -22,7 +22,7 @@ const grants = [
     programId: 260,
     grantee: "0x67eE5d3A5374849aDB4D80713a5765F164375F03",
     chain: 42161,
-    status: 1,
+    status: 2,
   },
 ];
 

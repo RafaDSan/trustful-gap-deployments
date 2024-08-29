@@ -31,11 +31,11 @@ async function main() {
     resolverEAS.address,
   );
 
-  console.log("GrantRegistry deployed to:", grantRegistry.address);
-  console.log("BadgeRegistry deployed to:", badgeRegistry.address);
-  console.log("TrustfulScorer deployed to:", trustfulScorer.address);
-  console.log("ResolverEAS deployed to:", resolverEAS.address);
-  console.log("ResolverTrustful deployed to:", resolverTrustful.address);
+  console.log("GRANT_REGISTRY deployed to:", grantRegistry.address);
+  console.log("BADGE_REGISTRY deployed to:", badgeRegistry.address);
+  console.log("TRUSTFUL_SCORER deployed to:", trustfulScorer.address);
+  console.log("RESOLVER_EAS deployed to:", resolverEAS.address);
+  console.log("RESOLVER_TRUSTFUL deployed to:", resolverTrustful.address);
 }
 
 main()

@@ -35,7 +35,7 @@ async function main() {
   };
 
   const request = {
-    schema: process.env.ARB_ONE_SCHEMA_REGISTRY as string,
+    schema: process.env.KARMA_EAS_SCHEMA_UID as string,
     data: requestData,
   };
 

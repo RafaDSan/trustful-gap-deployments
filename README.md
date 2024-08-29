@@ -48,7 +48,20 @@ $ npx hardhat verify --network arbitrum <CONTRACT_ADDRESS> <CONSTRUCTOR_ARGS>
 
 ### 2. Register the grants
 
-Register the grants on the in the `GrantRegistry.sol`
+You must first fill the `registerGrants.ts` file with the grants you want to register. The grants
+use the following interface:
+
+```solidity
+  struct Grant {
+    bytes32 grantUID; // The grant UID defined in EAS
+    uint256 grantProgramUID; // The grant program UID defined by Karma Gap
+    address grantee; // Address of the person in charge of delivering the grant
+    uint256 chainId; // The chain ID where the grant was originated
+    Status status; // Current status of the grant
+  }
+```
+
+Register the grants in the `GrantRegistry.sol`:
 
 ```sh
 $ yarn grants --network arbitrum
@@ -56,11 +69,26 @@ $ yarn grants --network arbitrum
 
 ### 3. Register the badges
 
-Register the badges on the in the `BadgeRegistry.sol`
+You must first fill the `registerBadges.ts` file with the grants you want to register. The grants
+use the following interface:
+
+```solidity
+  struct Badge {
+    string name; // The badge name or title
+    string description; // The description of the badge
+    string metadata; // A metadata to point external links or json format with the entire badge data
+    bytes data; // Arbitrary data to be used by implementers
+  }
+```
+
+Register the badges in the `BadgeRegistry.sol`:
 
 ```sh
 $ yarn badges --network arbitrum
 ```
+
+Grab the Badges from the logs and save them into the `registerScorer.ts` file. We will need them to
+create the Scorer.
 
 ### 4. Create a Scorer
 
@@ -72,6 +100,8 @@ exact score the reviewer will give.
 $ yarn scorer --network arbitrum
 ```
 
+Save the resulting Scorer ID into the `.env` file.
+
 ### 2. Create Schemas on EAS
 
 Create the schemas on the EAS contract:
@@ -79,6 +109,8 @@ Create the schemas on the EAS contract:
 ```sh
 $ yarn schemas --network arbitrum
 ```
+
+Save the resulting schema UID into the `.env` file.
 
 ### 6. Initialize the contracts
 

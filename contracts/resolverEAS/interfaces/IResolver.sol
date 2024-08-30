@@ -12,12 +12,18 @@ interface IResolver {
   error InvalidBadgeID();
   /// Emitted when trying to set contracts as address zero.
   error InvalidContractAddress();
+  /// Emitted then the attestation was subnmitted with less than max uint64 expiration time.
+  error InvalidExpirationTime();
   /// Emitted when the grantee is doesn't match the one in the grant registry.
   error InvalidGrantOwner();
   /// Emitted when the grant cannot be reviwed.
   error InvalidGrantReview();
   /// Emitted when the review score is not between 1 and 5.
   error InvalidScoreValue();
+  /// Emitted when the refUID doesn't match the grant UID.
+  error InvalidRefUID();
+  /// Emitted when the attestation is revocable.
+  error InvalidRevocability();
 
   /// Emitted when a new grant registry is set.
   event GrantRegistryUpdated(address indexed oldGrantRegistry, address indexed newGrantRegistry);

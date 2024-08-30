@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
+/// @notice The interface of the {BadgeRegistry} contract.
 interface IBadgeRegistry {
   /// Emitted when the badge is already registered.
   error BadgeAlreadyRegistered();

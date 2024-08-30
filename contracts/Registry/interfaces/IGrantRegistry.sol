@@ -69,7 +69,7 @@ interface IGrantRegistry {
 
   /// @notice Get the grantee address.
   /// @param grantUID The grant ID to be retrieved.
-  function getGrantee(bytes32 grantUID) external view returns (address);
+  function getGranteeAddress(bytes32 grantUID) external view returns (address);
 
   /// @notice Get the grant program UID.
   /// @param grantUID The grant ID to be retrieved.

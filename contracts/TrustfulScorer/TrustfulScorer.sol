@@ -11,8 +11,8 @@ import { EnumerableSetLib } from "./utils/EnumerableSetLib.sol";
 /// This data can be anything that can be fetched on-chain. For this reason,
 /// the scorer asks for the implementation of Resolver contracts to provide the
 /// implementation that returns the necessary data to compute the final score.
-/// This contract also have a legacy version in case the badges created follow
-/// the {BadgeRegistry} standard.
+/// This contract also have a legacy version for badges following the
+/// {BadgeRegistry} standard.
 contract TrustfulScorer is ITrustfulScorer {
   using EnumerableSetLib for EnumerableSetLib.Bytes32Set;
 
@@ -35,7 +35,7 @@ contract TrustfulScorer is ITrustfulScorer {
   /// Map scorer ID to the resolver address of that scorer.
   mapping(uint256 => address) private _resolvers;
 
-  /// @dev Only allow manager address to perform actions.
+  /// @dev Only allow the manager address to perform actions.
   /// @param scorerId The scorer ID.
   modifier onlyManager(uint256 scorerId) {
     if (_managers[scorerId] != msg.sender) revert InvalidManager();
@@ -73,9 +73,8 @@ contract TrustfulScorer is ITrustfulScorer {
     // iterate over the badgeIds and badgeScores to add them to the scorer
     for (uint256 i = 0; i < badgeIds.length; ) {
       scorer.badgeIds.add(badgeIds[i]);
-      unchecked {
-        scorer.badgeScores[badgeIds[i]] = badgeScores[i] * 10 ** scoresDecimals;
-      }
+      // can't optimize, need to check for overflow
+      scorer.badgeScores[badgeIds[i]] = badgeScores[i] * 10 ** scoresDecimals;
       assembly {
         i := add(i, 1)
       }
@@ -120,6 +119,7 @@ contract TrustfulScorer is ITrustfulScorer {
   ) external onlyManager(scorerId) {
     Scorer storage scorer = _scorers[scorerId];
     if (scorer.badgeBalances[account].contains(badgeId)) revert BadgeRegistered();
+    if (badgeId == bytes32(0)) revert InvalidBadgeId();
     scorer.badgeBalances[account].add(badgeId);
     emit BadgeAddedToAddr(account, scorerId, badgeId);
   }
@@ -232,7 +232,7 @@ contract TrustfulScorer is ITrustfulScorer {
   }
 
   /// @inheritdoc ITrustfulScorer
-  function getBadgesIds(uint256 scorerId) public view returns (bytes32[] memory) {
+  function getBadgeIds(uint256 scorerId) public view returns (bytes32[] memory) {
     if (!scorerExists(scorerId)) revert ScorerNotRegistered();
     return _scorers[scorerId].badgeIds.values();
   }
@@ -240,9 +240,8 @@ contract TrustfulScorer is ITrustfulScorer {
   /// @inheritdoc ITrustfulScorer
   function getBadgesScores(uint256 scorerId) external view returns (uint256[] memory) {
     Scorer storage scorer = _scorers[scorerId];
-    if (scorer.badgeIds.length() == 0) revert ScorerNotRegistered();
 
-    bytes32[] memory badgeIds = getBadgesIds(scorerId);
+    bytes32[] memory badgeIds = getBadgeIds(scorerId);
     uint256[] memory badgeScores = new uint256[](badgeIds.length);
 
     for (uint256 i = 0; i < badgeIds.length; i++) {
@@ -269,16 +268,19 @@ contract TrustfulScorer is ITrustfulScorer {
     uint256 scorerId
   ) external view returns (bytes32[] memory) {
     Scorer storage scorer = _scorers[scorerId];
+    if (!scorerExists(scorerId)) revert ScorerNotRegistered();
     return scorer.badgeBalances[account].values();
   }
 
   /// @inheritdoc ITrustfulScorer
   function getManagerAddress(uint256 scorerId) external view returns (address) {
+    if (!scorerExists(scorerId)) revert ScorerNotRegistered();
     return _managers[scorerId];
   }
 
   /// @inheritdoc ITrustfulScorer
   function getResolverAddress(uint256 scorerId) external view returns (address) {
+    if (!scorerExists(scorerId)) revert ScorerNotRegistered();
     return _resolvers[scorerId];
   }
 

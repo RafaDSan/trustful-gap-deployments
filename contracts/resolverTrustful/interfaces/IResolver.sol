@@ -15,6 +15,8 @@ interface IResolver {
   error ScorerNotInitialized();
   /// Emitted when the resolver is not registered in the scorer.
   error ResolverNotRegistered();
+  /// Emitted when there is an attemp to divide by zero.
+  error DivisionByZero();
 
   /// Emitted when a new Scorer address is set.
   event ScorerUpdated(address indexed oldScorer, address indexed newScorer);
@@ -69,20 +71,21 @@ interface IResolver {
     uint8[] calldata scores
   ) external returns (bool success);
 
-  /// @notice Sets a new address for the Trustful Scorer.
+  /// @notice Sets a new address as the Trustful Scorer.
   /// NOTE: Will set the scorerId to zero. You must set it again.
-  /// @param _scorer Address of the Trustful Scorer contract.
-  function setScorer(address _scorer) external;
+  /// @param newScorerAddr Address of the Trustful Scorer contract.
+  function setScorerAddress(address newScorerAddr) external;
 
   /// @notice Sets a new scorer ID.
   /// @param _scorerId Unique identifier of the scorer.
   function setScorerId(uint256 _scorerId) external;
 
-  /// @notice Sets a new address for the EAS Resolver.
-  /// @param _easResolver Address of the EAS Resolver contract.
-  function setEASResolver(address _easResolver) external;
+  /// @notice Sets a new address as the EAS Resolver.
+  /// @param newEasResolverAddr Address of the EAS Resolver contract.
+  function setEASResolverAddress(address newEasResolverAddr) external;
 
-  /// @param grantProgramUID Encoded grant program UID.
+  /// @dev This implementation is required by {TrustfulScorer}.
+  /// @param grantProgramUID Abi Encoded grant program UID.
   /// @return success If the operation succeeded.
   /// @return score The average score of the grant program.
   function scoreOf(
@@ -119,11 +122,11 @@ interface IResolver {
   /// - The grant program must exist
   /// - The grant program must have at least one review.
   ///
-  /// NOTE: The result will be multiplied by the decimals in the Scorer.
+  /// NOTE: The result is multiplied by the decimals in the Scorer.
   /// Solidity can't handle floating points, so you can get the decimals by
   /// calling {ITrustfulScorer.getScorerDecimals} and dividing the result.
   ///
   /// @param grantProgramUID The ID of the progam.
   /// @return averageScore The average score of the grant program.
-  function getGrantProgramScore(uint256 grantProgramUID) external view returns (uint256);
+  function getGrantProgramAverageScore(uint256 grantProgramUID) external view returns (uint256);
 }

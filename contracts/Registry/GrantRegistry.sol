@@ -6,10 +6,10 @@ import { IGrantRegistry } from "./interfaces/IGrantRegistry.sol";
 
 /// @title Grant Registry
 /// @author KarmaGap | 0xneves.eth
-/// @notice Registry of grant applications.
-/// The Grant Programs can issue and manage grants.
+/// @notice This is a temporary solution to create a relation
+/// between `programId` and `grantId` in the KarmaGap platform.
 contract GrantRegistry is IGrantRegistry, Ownable {
-  /// Map the grant UID to the grant data
+  /// Map the grant UID to the grant data.
   mapping(bytes32 => Grant) private _grants;
 
   constructor() Ownable(msg.sender) {}
@@ -63,7 +63,7 @@ contract GrantRegistry is IGrantRegistry, Ownable {
   }
 
   /// @inheritdoc IGrantRegistry
-  function getGrantee(bytes32 grantUID) public view returns (address) {
+  function getGranteeAddress(bytes32 grantUID) public view returns (address) {
     _grantExists(grantUID);
     return _grants[grantUID].grantee;
   }

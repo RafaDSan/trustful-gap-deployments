@@ -6,7 +6,7 @@ import { IBadgeRegistry } from "./interfaces/IBadgeRegistry.sol";
 /// @title Badge Registry
 /// @author KarmaGap | 0xneves.eth
 contract BadgeRegistry is IBadgeRegistry {
-  /// Map of badges registered in the registry
+  /// Map of badges registered.
   mapping(bytes32 => Badge) public badges;
 
   /// @inheritdoc IBadgeRegistry

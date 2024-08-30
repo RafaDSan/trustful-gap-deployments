@@ -18,6 +18,5 @@ interface ITrustfulScorer {
   /// Requirements:
   /// - The scorer must exist.
   /// @param scorerId Unique identifier of the scorer.
-  /// @return The number of decimals of the scorer.
   function getScorerDecimals(uint256 scorerId) external view returns (uint8);
 }

@@ -47,7 +47,7 @@ contract Resolver is IResolver, Ownable {
   /// @inheritdoc IResolver
   function attest(Attestation calldata attestation) external payable onlyEAS returns (bool) {
     if (address(trustfulResolver) == address(0)) revert InvalidContractAddress();
-    if (attestation.recipient != msg.sender) revert InvalidGrantOwner();
+    if (attestation.recipient != attestation.attester) revert InvalidGrantOwner();
     if (attestation.expirationTime != 0) revert InvalidExpirationTime();
     if (attestation.revocable != false) revert InvalidRevocability();
 

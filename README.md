@@ -102,7 +102,7 @@ $ yarn scorer --network arbitrum
 
 Save the resulting Scorer ID into the `.env` file.
 
-### 2. Create Schemas on EAS
+### 5. Create Schemas on EAS
 
 Create the schemas on the EAS contract:
 

@@ -20,7 +20,7 @@ interface ITrustfulResolver {
   function createStory(
     bytes32 grantUID,
     bytes32 txUID,
-    uint256 grantProgramUID,
+    string calldata grantProgramUID,
     bytes32[] calldata badges,
     uint8[] calldata scores
   ) external returns (bool success);

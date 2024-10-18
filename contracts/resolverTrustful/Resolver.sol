@@ -9,7 +9,7 @@ import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 /// @author KarmaGap | 0xneves.eth
 /// @notice This is the implementation of the Trustful Resolver contract.
 /// This contract is used to resolve scores and badges for Karma Gap Reviews.
-contract Resolver is IResolver, Ownable {
+contract Resolver is  IResolver, Ownable {
   /// Trustful Scorer contract address
   address public trustfulScorer;
   /// EAS Resolver contract address
@@ -25,7 +25,7 @@ contract Resolver is IResolver, Ownable {
   /// @dev We don't expect this to grow too large
   mapping(bytes32 => GrantStory[]) private _stories;
   /// Maps grant program IDs to their reviews
-  mapping(uint256 => GrantProgram) private _grantPrograms;
+  mapping(string => GrantProgram) private _grantPrograms;
 
   /// @param _scorerAddr Address of the Trustful Scorer contract.
   /// @param _easResolverAddr Address of the EAS Resolver contract.
@@ -38,7 +38,7 @@ contract Resolver is IResolver, Ownable {
   function createStory(
     bytes32 grantUID,
     bytes32 txUID,
-    uint256 grantProgramUID,
+    string calldata grantProgramUID,
     bytes32[] calldata badges,
     uint8[] calldata scores
   ) external returns (bool) {
@@ -174,10 +174,10 @@ contract Resolver is IResolver, Ownable {
   }
 
   /// @inheritdoc IResolver
-  function scoreOf(bytes memory data) external view returns (bool success, uint256 score) {
-    uint256 grantProgramUID = abi.decode(data, (uint256));
+ function scoreOf(bytes calldata data) external view returns (bool success, uint256 score) {
+    string memory grantProgramUID = abi.decode(data, (string));
     return (true, getGrantProgramAverageScore(grantProgramUID));
-  }
+}
 
   /// @inheritdoc IResolver
   function getGrantStories(bytes32 grantUID) external view returns (GrantStory[] memory) {
@@ -199,20 +199,20 @@ contract Resolver is IResolver, Ownable {
 
   /// @inheritdoc IResolver
   function getGrantProgramValidReviewCount(
-    uint256 grantProgramUID
+    string calldata grantProgramUID
   ) external view returns (uint256) {
     return _grantPrograms[grantProgramUID].validReviewCount;
   }
 
   /// @inheritdoc IResolver
   function getGrantProgramTotalReviewCount(
-    uint256 grantProgramUID
+    string calldata grantProgramUID
   ) external view returns (uint256) {
     return _grantPrograms[grantProgramUID].reviewCount;
   }
 
   /// @inheritdoc IResolver
-  function getGrantProgramAverageScore(uint256 grantProgramUID) public view returns (uint256) {
+  function getGrantProgramAverageScore(string memory grantProgramUID) public view returns (uint256) {
     GrantProgram memory grantProgram = _grantPrograms[grantProgramUID];
     if (grantProgram.validReviewCount == 0) revert GrantProgramNotReviewed();
     return grantProgram.averageScore;

@@ -28,7 +28,7 @@ interface IResolver {
   event StoryCreated(
     bytes32 indexed grantUID,
     bytes32 indexed txUID,
-    uint256 indexed grantProgramUID,
+    string indexed grantProgramUID,
     uint256 timestamp,
     uint256 averageScore,
     uint256 reviewCount
@@ -66,7 +66,7 @@ interface IResolver {
   function createStory(
     bytes32 grantUID,
     bytes32 txUID,
-    uint256 grantProgramUID,
+    string calldata grantProgramUID,
     bytes32[] calldata badges,
     uint8[] calldata scores
   ) external returns (bool success);
@@ -85,11 +85,11 @@ interface IResolver {
   function setEASResolverAddress(address newEasResolverAddr) external;
 
   /// @dev This implementation is required by {TrustfulScorer}.
-  /// @param grantProgramUID Abi Encoded grant program UID.
+  /// @param data Abi Encoded grant program UID.
   /// @return success If the operation succeeded.
   /// @return score The average score of the grant program.
   function scoreOf(
-    bytes memory grantProgramUID
+    bytes calldata data
   ) external view returns (bool success, uint256 score);
 
   /// @param grantUID Unique identifier of the grant.
@@ -110,11 +110,11 @@ interface IResolver {
 
   /// @param grantProgramUID The ID of the progam.
   /// @return validReviewCount The review count for the grant program.
-  function getGrantProgramValidReviewCount(uint256 grantProgramUID) external view returns (uint256);
+  function getGrantProgramValidReviewCount(string calldata grantProgramUID) external view returns (uint256);
 
   /// @param grantProgramUID The ID of the progam.
   /// @return reviewCount The review count for the grant program.
-  function getGrantProgramTotalReviewCount(uint256 grantProgramUID) external view returns (uint256);
+  function getGrantProgramTotalReviewCount(string calldata grantProgramUID) external view returns (uint256);
 
   /// @notice Gets the average score of a grant program.
   ///
@@ -128,5 +128,5 @@ interface IResolver {
   ///
   /// @param grantProgramUID The ID of the progam.
   /// @return averageScore The average score of the grant program.
-  function getGrantProgramAverageScore(uint256 grantProgramUID) external view returns (uint256);
+  function getGrantProgramAverageScore(string memory grantProgramUID) external view returns (uint256);
 }

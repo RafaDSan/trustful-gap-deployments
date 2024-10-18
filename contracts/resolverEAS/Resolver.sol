@@ -47,22 +47,19 @@ contract Resolver is IResolver, Ownable {
   /// @inheritdoc IResolver
   function attest(Attestation calldata attestation) external payable onlyEAS returns (bool) {
     if (address(trustfulResolver) == address(0)) revert InvalidContractAddress();
-    if (attestation.recipient != attestation.attester) revert InvalidGrantOwner();
+    if (attestation.recipient != attestation.attester) revert InvalidGrantOwner(); 
     if (attestation.expirationTime != 0) revert InvalidExpirationTime();
     if (attestation.revocable != false) revert InvalidRevocability();
 
-    (bytes32 grantUID, bytes32[] memory badgeIds, uint8[] memory badgesScores) = abi.decode(
+    (bytes32 grantUID, bytes32[] memory badgeIds, uint8[] memory badgesScores, string memory grantProgramUID) = abi.decode(
       attestation.data,
-      (bytes32, bytes32[], uint8[])
+      (bytes32, bytes32[], uint8[], string)
     );
 
     if (attestation.refUID != grantUID) revert InvalidRefUID();
 
     // fetching each data separately because the grantRegistry might be upgraded someday
     // and this way we allow backwards compatibility
-    address grantee = grantRegistry.getGranteeAddress(grantUID);
-    uint256 grantProgramUID = grantRegistry.getGrantProgramUID(grantUID);
-    IGrantRegistry.Status status = grantRegistry.getStatus(grantUID);
 
     // check if badges exists in the registry
     for (uint256 i = 0; i < badgeIds.length; i++) {
@@ -73,16 +70,6 @@ contract Resolver is IResolver, Ownable {
       if (badgesScores[i] == 0 || badgesScores[i] > 5) {
         revert InvalidScoreValue();
       }
-    }
-
-    // check if grantee is the attester
-    if (grantee != attestation.attester) {
-      revert InvalidGrantOwner();
-    }
-
-    // rejected grants cannot be reviewed
-    if (status == IGrantRegistry.Status.Rejected) {
-      revert InvalidGrantReview();
     }
 
     // create a new review with a story
